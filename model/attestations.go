@@ -8,12 +8,12 @@ type AttestationDuties struct {
 
 type AttestationDutiesData struct {
 	PublicKey               string `json:"pubkey"`
-	ValidatorIndex          int    `json:"validator_index"`
-	CommitteesAtSlot        int    `json:"committees_at_slot"`
-	CommitteeIndex          int    `json:"committee_index"`
-	CommitteeLength         int    `json:"committee_length"`
-	ValidatorCommitteeIndex int    `json:"validator_committee_index"`
-	Slot                    int    `json:"slot"`
+	ValidatorIndex          string    `json:"validator_index"`
+	CommitteesAtSlot        string    `json:"committees_at_slot"`
+	CommitteeIndex          string    `json:"committee_index"`
+	CommitteeLength         string    `json:"committee_length"`
+	ValidatorCommitteeIndex string    `json:"validator_committee_index"`
+	Slot                    string    `json:"slot"`
 }
 
 type BlockAttestationDetails struct {
@@ -28,14 +28,14 @@ type BlockAttestationData struct {
 }
 
 type Data struct {
-	Slot            int        `json:"slot"`
-	Index           int        `json:"index"`
+	Slot            string        `json:"slot"`
+	Index           string        `json:"index"`
 	BeaconBlockRoot string     `json:"beacon_block_root"`
 	Source          Checkpoint `json:"source"`
 	Target          Checkpoint `json:"target"`
 }
 
 type Checkpoint struct {
-	Epoch int    `json:"epoch"`
+	Epoch string    `json:"epoch"`
 	Root  string `json:"root"`
 }
