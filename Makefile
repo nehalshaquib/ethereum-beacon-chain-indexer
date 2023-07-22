@@ -8,7 +8,7 @@ dropdb:
 	docker exec -it beacon-indexer-postgres dropdb beacon-indexer
 
 migrateup:
-	migrate -path migration -database "postgres://root:secret@localhost:5432/beacon-indexer?sslmode=disable" -verbose up
+	migrate -path db/migration -database "postgres://root:secret@localhost:5432/beacon-indexer?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path migration -database "postgres://root:secret@localhost:5432/beacon-indexer?sslmode=disable" -verbose down
+	migrate -path db/migration -database "postgres://root:secret@localhost:5432/beacon-indexer?sslmode=disable" -verbose down
