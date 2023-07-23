@@ -22,7 +22,6 @@ func (a *Attestation) getValidators() ([]model.Validator, error) {
 	defer resp.Body.Close()
 
 	dec := json.NewDecoder(resp.Body)
-	log.Println("POINT-1")
 	// Read the opening bracket '['
 	for {
 		t, err := dec.Token()
@@ -44,19 +43,18 @@ func (a *Attestation) getValidators() ([]model.Validator, error) {
 	var validators []model.Validator
 	for dec.More() {
 		var validator model.Validator
-		// log.Println("POINT-3")
 		err := dec.Decode(&validator)
 		if err != nil {
 			return nil, err
 		}
-		// log.Println("POINT-4")
-
+		a.validatorsIndex = append(a.validatorsIndex, validator.Index)
 		validators = append(validators, validator)
 	}
 	return validators, nil
 }
 
 func (a *Attestation) UpdateActiveValidators() error {
+	log.Println("starting update active validators")
 	previousFinalizedEpoch := "0"
 	for {
 		log.Println("updating checkpoints")
@@ -91,6 +89,7 @@ func (a *Attestation) UpdateActiveValidators() error {
 			previousFinalizedEpoch = currentFinalizedEpoch
 		}
 
+		a.validatorUpdateStarted <- true
 		log.Println("waiting till next 5 epochs (32 minutes)")
 		// Sleep until the next 5 epochs
 		time.Sleep(time.Duration(32*12*5) * time.Second)

@@ -11,15 +11,17 @@ import (
 type Indexer struct {
 	db *db.Database
 	// chainUrl      string
-	headerStopChan chan bool
-	dutiesStopChan chan bool
+	headerStopChan         chan bool
+	dutiesStopChan         chan bool
+	validatorUpdateStarted chan bool
 }
 
 func New(db *db.Database) *Indexer {
 	return &Indexer{
-		db:             db,
-		headerStopChan: make(chan bool),
-		dutiesStopChan: make(chan bool),
+		db:                     db,
+		headerStopChan:         make(chan bool),
+		dutiesStopChan:         make(chan bool),
+		validatorUpdateStarted: make(chan bool),
 	}
 }
 
@@ -30,10 +32,16 @@ func (i *Indexer) IndexHeader() {
 	}()
 }
 
-func (i *Indexer) UpdateValidators() {
-	a := attestation.New(i.db, i.dutiesStopChan)
+func (i *Indexer) AttestationDuties() {
+	a := attestation.New(i.db, i.dutiesStopChan, i.validatorUpdateStarted)
 	go func() {
 		err := a.UpdateActiveValidators()
+		if err != nil {
+			log.Println("ERR: ", err)
+		}
+	}()
+	go func() {
+		err := a.UpdateAttestationDuties()
 		if err != nil {
 			log.Println("ERR: ", err)
 		}

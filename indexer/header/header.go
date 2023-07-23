@@ -79,7 +79,7 @@ func (h *Header) SlotHeaderIndexer() {
 				log.Println("Error:", err)
 				h.headerStopChan <- true
 			}
-			log.Println("get Latest block done in main")
+		
 			// Increment the block ID for the next slot
 			blockIDInt, err := strconv.Atoi(blockID)
 			if err != nil {
