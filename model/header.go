@@ -23,3 +23,14 @@ type Message struct {
 	StateRoot     string `json:"state_root"`
 	BodyRoot      string `json:"body_root"`
 }
+
+type FinalityCheckpoints struct {
+	Data struct {
+		CurrentJustified struct {
+			Epoch string `json:"epoch"`
+		} `json:"current_justified"`
+		Finalized struct {
+			Epoch string `json:"epoch"`
+		} `json:"finalized"`
+	} `json:"data"`
+}
