@@ -42,6 +42,22 @@ CREATE TABLE "attestation_details" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
+CREATE TABLE "validators" (
+    "index" bigInt PRIMARY KEY,
+    "balance" bigInt NOT NULL,
+    "status" varchar NOT NULL,
+    "pubkey" varchar NOT NULL,
+    "withdrawal_credentials" varchar NOT NULL,
+    "effective_balance" bigInt NOT NULL,
+    "slashed" bool NOT NULL,
+    "activation_eligibility_epoch" varchar NOT NULL,
+    "activation_epoch" varchar NOT NULL,
+    "exit_epoch" varchar NOT NULL,
+    "withdrawable_epoch" varchar NOT NULL,
+    "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+
 CREATE INDEX ON "block_headers" ("root");
 
 CREATE INDEX ON "block_headers" ("proposer_index");
@@ -55,6 +71,8 @@ CREATE INDEX ON "attestation_duties" ("committee_index");
 CREATE INDEX ON "attestation_duties" ("slot");
 
 CREATE INDEX ON "attestation_details" ("slot");
+
+CREATE INDEX ON "validators" ("pubkey");
 
 ALTER TABLE "attestation_duties" ADD FOREIGN KEY ("slot") REFERENCES "block_headers" ("slot");
 
