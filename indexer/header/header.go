@@ -15,16 +15,16 @@ import (
 )
 
 type Header struct {
-	db            *db.Database
-	chainURL      string
-	headerErrChan chan error
+	db             *db.Database
+	chainURL       string
+	headerStopChan chan bool
 }
 
-func New(db *db.Database, headerErrChan chan error) *Header {
+func New(db *db.Database, headerStopChan chan bool) *Header {
 	return &Header{
-		db:            db,
-		chainURL:      config.ChainUrl,
-		headerErrChan: headerErrChan,
+		db:             db,
+		chainURL:       config.ChainUrl,
+		headerStopChan: headerStopChan,
 	}
 }
 
@@ -60,30 +60,38 @@ func (h *Header) getLatestBlockID() (string, error) {
 func (h *Header) SlotHeaderIndexer() {
 	blockID, err := h.getLatestBlockID()
 	if err != nil {
-		h.headerErrChan <- err
+		h.headerStopChan <- true
 		return
 	}
 
 	for {
-		header, err := h.getNewSlot(blockID)
-		if err != nil {
-			log.Println("Error:", err)
-			continue
-		}
-		_, err = h.db.AddSlot(header)
-		if err != nil {
-			h.headerErrChan <- err
-		}
-		log.Println("get Latest block done in main")
-		// Increment the block ID for the next slot
-		blockIDInt, err := strconv.Atoi(blockID)
-		if err != nil {
-			log.Println("Error:", err)
-			continue
-		}
-		blockID = strconv.Itoa(blockIDInt + 1)
+		select {
+		case <-h.headerStopChan:
+			return
+		default:
+			header, err := h.getNewSlot(blockID)
+			if err != nil {
+				log.Println("Error:", err)
+				continue
+			}
+			_, err = h.db.AddSlot(header)
+			if err != nil {
+				log.Println("Error:", err)
+				h.headerStopChan <- true
+			}
+			log.Println("get Latest block done in main")
+			// Increment the block ID for the next slot
+			blockIDInt, err := strconv.Atoi(blockID)
+			if err != nil {
+				log.Println("Error:", err)
+				continue
+			}
+			blockID = strconv.Itoa(blockIDInt + 1)
 
-		// Wait for the next slot
-		time.Sleep(12 * time.Second)
+			// Wait for the next slot
+			time.Sleep(12 * time.Second)
+		}
+
 	}
+
 }
