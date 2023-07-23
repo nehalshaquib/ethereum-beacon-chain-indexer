@@ -12,3 +12,9 @@ migrateup:
 
 migratedown:
 	migrate -path db/migration -database "postgres://root:secret@localhost:5432/beacon-indexer?sslmode=disable" -verbose down
+
+build:
+	go build -o ./build/eth-beacon-chain-indexer
+
+# Declare the targets that are not associated with files
+.PHONY: build run up up-build
