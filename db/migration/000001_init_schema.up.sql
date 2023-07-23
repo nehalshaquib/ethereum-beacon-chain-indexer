@@ -70,7 +70,4 @@ CREATE INDEX ON "attestation_details" ("slot");
 
 CREATE INDEX ON "validators" ("pubkey");
 
-ALTER TABLE "attestation_duties" ADD FOREIGN KEY ("slot") REFERENCES "block_headers" ("slot");
-
-ALTER TABLE "attestation_details" ADD FOREIGN KEY ("slot") REFERENCES "block_headers" ("slot");
 
