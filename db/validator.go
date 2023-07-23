@@ -18,7 +18,7 @@ func (db *Database) AddOrUpdateValidators(validators []model.Validator) (err err
 		}
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
-
+ 
 	// Create a temporary table
 	_, err = tx.Exec(`CREATE TEMP TABLE temp_validators (LIKE validators INCLUDING DEFAULTS) ON COMMIT DROP;`)
 	if err != nil {

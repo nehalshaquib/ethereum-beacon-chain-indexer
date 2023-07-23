@@ -17,7 +17,6 @@ type Validator struct {
 }
 
 type ValidatorResponse struct {
-	ExecutionOptimistic bool        `json:"execution_optimistic"`
-	Finalized           bool        `json:"finalized"`
-	Data                []Validator `json:"data"`
+	Finalized bool        `json:"finalized"`
+	Data      []Validator `json:"data"`
 }

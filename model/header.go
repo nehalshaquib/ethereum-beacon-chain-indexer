@@ -1,9 +1,8 @@
 package model
 
 type BlockHeader struct {
-	ExecutionOptimistic bool            `json:"execution_optimistic"`
-	Finalized           bool            `json:"finalized"`
-	Data                BlockHeaderData `json:"data"`
+	Finalized bool            `json:"finalized"`
+	Data      BlockHeaderData `json:"data"`
 }
 
 type BlockHeaderData struct {

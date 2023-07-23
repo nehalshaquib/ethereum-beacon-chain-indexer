@@ -8,14 +8,11 @@ CREATE TABLE "block_headers" (
   "body_root" varchar NOT NULL,
   "signature" varchar NOT NULL,
   "finalized" bool NOT NULL,
-  "execution_optimistic" bool NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "attestation_duties" (
   "id" BIGSERIAL PRIMARY KEY,
-  "dependent_root" varchar NOT NULL,
-  "execution_optimistic" bool NOT NULL,
   "pubkey" varchar NOT NULL,
   "validator_index" bigInt NOT NULL,
   "committees_at_slot" bigInt NOT NULL,
@@ -25,10 +22,9 @@ CREATE TABLE "attestation_duties" (
   "slot" bigInt NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
-
+ 
 CREATE TABLE "attestation_details" (
   "id" BIGSERIAL PRIMARY KEY,
-  "execution_optimistic" bool NOT NULL,
   "finalized" bool NOT NULL,
   "aggregation_bits" varchar NOT NULL,
   "slot" bigInt NOT NULL,
