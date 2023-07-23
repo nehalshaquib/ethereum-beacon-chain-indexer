@@ -18,5 +18,5 @@ func main() {
 
 	indexer := indexer.New(db)
 	indexer.IndexHeader()
-	indexer.UpdateValidators()
+	indexer.AttestationDuties()
 }
