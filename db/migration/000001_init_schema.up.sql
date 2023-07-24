@@ -53,6 +53,14 @@ CREATE TABLE "validators" (
     "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
+CREATE TABLE "participation" (
+    "index" bigInt PRIMARY KEY,
+    "from_slot" varchar NOT NULL,
+    "to_slot" varchar NOT NULL,
+    "missed_attestations" bigInt NOT NULL,
+    "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
 CREATE INDEX ON "block_headers" ("root");
 
 CREATE INDEX ON "block_headers" ("proposer_index");

@@ -9,8 +9,10 @@ import (
 )
 
 var (
-	DBUrl    string
-	ChainUrl string
+	DBUrl         string
+	ChainUrl      string
+	EpochLimit    int
+	SlotsPerEpoch int
 )
 
 func Config() error {
@@ -30,6 +32,9 @@ func Config() error {
 		return errors.New("BEACON_CHAIN_URL cannot be empty")
 	}
 	ChainUrl = chainUrl
+
+	EpochLimit = 5
+	SlotsPerEpoch = 32
 
 	return nil
 }

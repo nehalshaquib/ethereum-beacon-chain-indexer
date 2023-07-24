@@ -19,4 +19,5 @@ func main() {
 	indexer := indexer.New(db)
 	indexer.IndexHeader()
 	indexer.StartAttestations()
+
 }

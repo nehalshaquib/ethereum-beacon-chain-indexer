@@ -6,6 +6,7 @@ import (
 	"github.com/nehalshaquib/ethereum-beacon-chain-indexer.git/db"
 	"github.com/nehalshaquib/ethereum-beacon-chain-indexer.git/indexer/attestation"
 	"github.com/nehalshaquib/ethereum-beacon-chain-indexer.git/indexer/header"
+	"github.com/nehalshaquib/ethereum-beacon-chain-indexer.git/participation"
 )
 
 type Indexer struct {
@@ -47,6 +48,13 @@ func (i *Indexer) StartAttestations() {
 			log.Println("ERR: ", err)
 		}
 	}()
+
+	p := participation.New(i.db)
+	rate, err := p.GetParticipationRate("2")
+	if err != nil {
+		log.Println("ERR: GetParticipationRate: ", err)
+	}
+	log.Println("rate: ", rate*100)
 
 	go a.StartBlockAttestationDetails()
 	<-i.IndexerStopChan
