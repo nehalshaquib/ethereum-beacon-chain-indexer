@@ -47,7 +47,7 @@ func (a *Attestation) getValidators() ([]model.Validator, error) {
 		if err != nil {
 			return nil, err
 		}
-		a.validatorsIndex = append(a.validatorsIndex, validator.Index)
+		a.validatorsIndexes = append(a.validatorsIndexes, validator.Index)
 		validators = append(validators, validator)
 	}
 	return validators, nil

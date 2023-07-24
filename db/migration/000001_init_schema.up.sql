@@ -53,7 +53,6 @@ CREATE TABLE "validators" (
     "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-
 CREATE INDEX ON "block_headers" ("root");
 
 CREATE INDEX ON "block_headers" ("proposer_index");

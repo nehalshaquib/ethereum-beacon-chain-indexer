@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/lib/pq"
 	"github.com/nehalshaquib/ethereum-beacon-chain-indexer.git/model"
@@ -49,7 +50,6 @@ func (db *Database) UpdateAttestationDuties(duties []model.AttestationDuties) (e
 			}
 			return fmt.Errorf("failed to exec COPY statement: %w", err)
 		}
-		log.Println("Done for: ", duty.ValidatorIndex)
 	}
 
 	// Close the statement
@@ -84,6 +84,26 @@ func (db *Database) TruncateAttestationDuties() error {
 	_, err := db.db.Exec("TRUNCATE TABLE attestation_duties;")
 	if err != nil {
 		return fmt.Errorf("failed to truncate attestation_duties table: %w", err)
+	}
+	return nil
+}
+
+func (db *Database) AddAttestations(response model.BlockAttestationResponse) error {
+	for _, attestation := range response.Data {
+		_, err := db.db.Exec(`INSERT INTO attestation_details (finalized, aggregation_bits, slot, index, beacon_block_root, source_epoch, source_root, target_epoch, target_root, signature, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+			response.Finalized, attestation.AggregationBits, attestation.Data.Slot, attestation.Data.Index, attestation.Data.BeaconBlockRoot, attestation.Data.Source.Epoch, attestation.Data.Source.Root, attestation.Data.Target.Epoch, attestation.Data.Target.Root, attestation.Signature, time.Now())
+		if err != nil {
+			return fmt.Errorf("failed to add attestation: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func (db *Database) TruncateAttestationDetails() error {
+	_, err := db.db.Exec("TRUNCATE TABLE attestation_details;")
+	if err != nil {
+		return fmt.Errorf("failed to truncate attestation_details table: %w", err)
 	}
 	return nil
 }

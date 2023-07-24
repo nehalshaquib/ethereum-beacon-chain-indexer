@@ -17,16 +17,14 @@ import (
 type Attestation struct {
 	db                     *db.Database
 	chainURL               string
-	dutiesStopChan         chan bool
-	validatorsIndex        []string
+	validatorsIndexes      []string
 	validatorUpdateStarted chan bool
 }
 
-func New(db *db.Database, dutiesStopChan chan bool, validatorUpdateStarted chan bool) *Attestation {
+func New(db *db.Database, validatorUpdateStarted chan bool) *Attestation {
 	return &Attestation{
 		db:                     db,
 		chainURL:               config.ChainUrl,
-		dutiesStopChan:         dutiesStopChan,
 		validatorUpdateStarted: validatorUpdateStarted,
 	}
 }
@@ -40,8 +38,6 @@ func (a *Attestation) getAttestationDuties(epoch string, validatorIndices []stri
 
 	// Create a new HTTP request
 	reqUrl := fmt.Sprintf("%s/eth/v1/validator/duties/attester/%s", config.ChainUrl, epoch)
-	log.Println("Request URL attestation: ", reqUrl)
-	log.Println("Request BODY: ", len(validatorIndices))
 	req, err := http.NewRequest("POST", reqUrl, bytes.NewBuffer(jsonIndices))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
@@ -57,7 +53,6 @@ func (a *Attestation) getAttestationDuties(epoch string, validatorIndices []stri
 	}
 	defer resp.Body.Close()
 
-	log.Println("Resp Status: ", resp.StatusCode)
 	dec := json.NewDecoder(resp.Body)
 	// Read the opening bracket '['
 	for {
@@ -85,7 +80,6 @@ func (a *Attestation) getAttestationDuties(epoch string, validatorIndices []stri
 		if err != nil {
 			return nil, err
 		}
-		log.Println("attestation for: ", duty.ValidatorIndex)
 		duties = append(duties, duty)
 	}
 
@@ -112,6 +106,7 @@ func (a *Attestation) UpdateAttestationDuties() error {
 		if currentFinalizedEpoch != previousFinalizedEpoch {
 			epochsPassed++
 			if epochsPassed > 5 {
+				log.Printf("truncating attestation duties in epoch %s as passed 5 epochs", currentFinalizedEpoch)
 				err = a.db.TruncateAttestationDuties()
 				if err != nil {
 					log.Println("TruncateAttestationDuties:", err)
@@ -119,7 +114,7 @@ func (a *Attestation) UpdateAttestationDuties() error {
 			}
 			log.Println("getting attestaton duties")
 
-			duties, err := a.getAttestationDuties(currentFinalizedEpoch, a.validatorsIndex)
+			duties, err := a.getAttestationDuties(currentFinalizedEpoch, a.validatorsIndexes)
 			if err != nil {
 				log.Println("getAttestationDuties:", err)
 			}

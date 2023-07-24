@@ -49,7 +49,6 @@ func (db *Database) AddOrUpdateValidators(validators []model.Validator) (err err
 			}
 			return fmt.Errorf("failed to exec COPY statement: %w", err)
 		}
-		log.Println("Done for: ", validator.Index)
 	}
 
 	// Close the statement

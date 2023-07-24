@@ -12,7 +12,7 @@ type Indexer struct {
 	db *db.Database
 	// chainUrl      string
 	headerStopChan         chan bool
-	dutiesStopChan         chan bool
+	IndexerStopChan        chan bool
 	validatorUpdateStarted chan bool
 }
 
@@ -20,7 +20,7 @@ func New(db *db.Database) *Indexer {
 	return &Indexer{
 		db:                     db,
 		headerStopChan:         make(chan bool),
-		dutiesStopChan:         make(chan bool),
+		IndexerStopChan:        make(chan bool),
 		validatorUpdateStarted: make(chan bool),
 	}
 }
@@ -32,19 +32,22 @@ func (i *Indexer) IndexHeader() {
 	}()
 }
 
-func (i *Indexer) AttestationDuties() {
-	a := attestation.New(i.db, i.dutiesStopChan, i.validatorUpdateStarted)
+func (i *Indexer) StartAttestations() {
+	a := attestation.New(i.db, i.validatorUpdateStarted)
 	go func() {
 		err := a.UpdateActiveValidators()
 		if err != nil {
 			log.Println("ERR: ", err)
 		}
 	}()
+
 	go func() {
 		err := a.UpdateAttestationDuties()
 		if err != nil {
 			log.Println("ERR: ", err)
 		}
 	}()
-	<-i.dutiesStopChan
+
+	go a.StartBlockAttestationDetails()
+	<-i.IndexerStopChan
 }
